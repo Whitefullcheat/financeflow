@@ -1,0 +1,54 @@
+{
+  "users": {
+    "admin": {
+      "password": "1234"
+    }
+  },
+  "ledgers": {
+    "admin": {
+      "isSetup": true,
+      "baseBalance": 100.00,
+      "defaultRate": 20.00,
+      "shifts": [
+        {
+          "id": 1700000001,
+          "date": "04/05",
+          "rate": 25.00,
+          "paid": true
+        },
+        {
+          "id": 1700000002,
+          "date": "03/05",
+          "rate": 20.00,
+          "paid": true
+        },
+        {
+          "id": 1700000003,
+          "date": "02/05",
+          "rate": 20.00,
+          "paid": false
+        }
+      ],
+      "expenses": [
+        {
+          "id": 1700000004,
+          "amount": 5.50,
+          "description": "Coffee",
+          "date": "May 4"
+        },
+        {
+          "id": 1700000005,
+          "amount": 12.00,
+          "description": "Lunch",
+          "date": "May 3"
+        },
+        {
+          "id": 1700000006,
+          "amount": 3.20,
+          "description": "Transit",
+          "date": "May 2"
+        }
+      ]
+    }
+  }
+}

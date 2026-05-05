@@ -2,9 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const connectDB = require('./config/db');
-const User = require('./models/User');
-const Ledger = require('./models/Ledger');
+const connectDB = require('./db');
+const User = require('./User');
+const Ledger = require('./Ledger');
 
 const app = express();
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key-change-in-production';

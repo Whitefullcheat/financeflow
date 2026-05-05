@@ -1,19 +1,22 @@
 {
   "name": "financeflow-api",
   "version": "1.0.0",
-  "description": "FinanceFlow - Personal Work & Expense Ledger API",
+  "description": "FinanceFlow - Personal Work & Expense Ledger API with MongoDB",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["finance", "ledger", "expense"],
+  "keywords": ["finance", "ledger", "expense", "mongodb"],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "jsonwebtoken": "^9.0.0"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^8.0.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

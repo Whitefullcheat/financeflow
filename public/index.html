@@ -549,5 +549,169 @@
     </div>
   </section>
 
+
+<script>
+  // =========================
+  // FinanceFlow App Logic
+  // =========================
+
+  const STORAGE_KEY = 'financeflow-data';
+
+  const defaultData = {
+    balance: 284000,
+    revenue: 48000,
+    investments: 126000,
+    savings: 84000,
+    growth: 14.2,
+    history: [30, 50, 40, 70, 90, 65, 100]
+  };
+
+  // Preserve old saved data if it exists
+  let financeData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData;
+
+  // Save helper
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(financeData));
+  }
+
+  // Format currency
+  function formatCurrency(num) {
+    if (num >= 1000) {
+      return '$' + (num / 1000).toFixed(0) + 'k';
+    }
+
+    return '$' + num.toLocaleString();
+  }
+
+  // Animate numbers
+  function animateValue(element, start, end, duration = 1200) {
+    let startTime = null;
+
+    function animation(currentTime) {
+      if (!startTime) startTime = currentTime;
+
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const current = Math.floor(progress * (end - start) + start);
+
+      element.textContent = formatCurrency(current);
+
+      if (progress < 1) {
+        requestAnimationFrame(animation);
+      }
+    }
+
+    requestAnimationFrame(animation);
+  }
+
+  // Update UI
+  function renderDashboard() {
+    const balanceElement = document.querySelector('.balance h1');
+    const revenueElement = document.querySelectorAll('.stat p')[0];
+    const investmentsElement = document.querySelectorAll('.stat p')[1];
+    const savingsElement = document.querySelectorAll('.stat p')[2];
+    const growthElement = document.querySelector('.growth');
+    const bars = document.querySelectorAll('.bar');
+
+    animateValue(balanceElement, 0, financeData.balance);
+    animateValue(revenueElement, 0, financeData.revenue);
+    animateValue(investmentsElement, 0, financeData.investments);
+    animateValue(savingsElement, 0, financeData.savings);
+
+    growthElement.textContent = `+${financeData.growth}%`;
+
+    bars.forEach((bar, index) => {
+      const value = financeData.history[index] || 50;
+      setTimeout(() => {
+        bar.style.height = value + '%';
+      }, index * 80);
+    });
+  }
+
+  // Smooth scroll helper
+  function smoothScrollTo(selector) {
+    const target = document.querySelector(selector);
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  // Buttons
+  const startBtn = document.querySelector('.primary-btn');
+  const demoBtn = document.querySelector('.secondary-btn');
+  const navBtn = document.querySelector('.nav-button');
+
+  startBtn.addEventListener('click', () => {
+    smoothScrollTo('.features');
+  });
+
+  navBtn.addEventListener('click', () => {
+    smoothScrollTo('.features');
+  });
+
+  demoBtn.addEventListener('click', () => {
+    const dashboard = document.querySelector('.dashboard-card');
+
+    dashboard.animate([
+      {
+        transform: 'translateY(0px) scale(1)',
+      },
+      {
+        transform: 'translateY(-12px) scale(1.01)',
+      },
+      {
+        transform: 'translateY(0px) scale(1)',
+      }
+    ], {
+      duration: 1200,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+    });
+
+    financeData.balance += Math.floor(Math.random() * 5000);
+    financeData.revenue += Math.floor(Math.random() * 2000);
+    financeData.investments += Math.floor(Math.random() * 3000);
+    financeData.savings += Math.floor(Math.random() * 1500);
+    financeData.growth = (Math.random() * 20).toFixed(1);
+
+    financeData.history = financeData.history.map(() =>
+      Math.floor(Math.random() * 100) + 20
+    );
+
+    saveData();
+    renderDashboard();
+  });
+
+  // Navbar links
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      smoothScrollTo('.features');
+    });
+  });
+
+  // Card hover parallax
+  const dashboardCard = document.querySelector('.dashboard-card');
+
+  dashboardCard.addEventListener('mousemove', e => {
+    const rect = dashboardCard.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const rotateY = ((x / rect.width) - 0.5) * 10;
+    const rotateX = ((y / rect.height) - 0.5) * -10;
+
+    dashboardCard.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+  });
+
+  dashboardCard.addEventListener('mouseleave', () => {
+    dashboardCard.style.transform = 'rotateY(-12deg) rotateX(6deg)';
+  });
+
+  // Initialize
+  renderDashboard();
+</script>
+
 </body>
 </html>

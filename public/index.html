@@ -1,523 +1,553 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanceFlow | Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-deep: #0b0e14;
-            --bg-card: #161b22;
-            --bg-input: #0d1117;
-            --accent: #818cf8;
-            --text-main: #f0f6fc;
-            --border: #30363d;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceFlow</title>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            letter-spacing: -0.01em;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        .bento-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            transition: border 0.3s ease;
-        }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .input-field {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 14px;
-            color: white;
-            transition: all 0.2s;
-        }
+    :root {
+      --bg: #050505;
+      --secondary: #0b0b0b;
+      --card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.06);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.65);
+      --accent: #8ba4ff;
+      --accent2: #5d79ff;
+    }
 
-        .input-field:focus {
-            border-color: var(--accent);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, rgba(92, 110, 255, 0.15), transparent 35%), var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
 
-        .custom-cb {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-        }
-        .custom-cb:checked { background: #10b981; border-color: #10b981; }
-        .custom-cb:checked::after {
-            content: '✓';
-            position: absolute;
-            color: white;
-            font-size: 12px;
-            left: 50%; top: 50%;
-            transform: translate(-50%, -50%);
-        }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mix-blend-mode: soft-light;
+    }
 
-        .modal-blur {
-            backdrop-filter: blur(8px);
-            background: rgba(0, 0, 0, 0.7);
-        }
+    .container {
+      width: min(1400px, 92%);
+      margin: auto;
+    }
 
-        .hidden { display: none !important; }
-        
-        .spinner {
-            border: 2px solid rgba(129, 140, 248, 0.2);
-            border-top: 2px solid #818cf8;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 0.8s linear infinite;
-        }
+    nav {
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      margin-top: 20px;
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+      border-radius: 999px;
+      backdrop-filter: blur(24px);
+      background: rgba(12,12,12,0.65);
+      border: 1px solid var(--border);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 10px 40px rgba(0,0,0,0.45);
+    }
 
-        .error { color: #ef4444; font-size: 12px; }
-        .success { color: #10b981; font-size: 12px; }
-    </style>
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-button {
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      color: white;
+      cursor: pointer;
+      transition: 0.35s ease;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-text span {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(4rem, 8vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      font-weight: 800;
+      margin-bottom: 28px;
+    }
+
+    .hero-text p {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .primary-btn {
+      padding: 18px 28px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.35s ease;
+      box-shadow: 0 20px 60px rgba(93,121,255,0.25);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .secondary-btn {
+      padding: 18px 28px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.35s ease;
+    }
+
+    .secondary-btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .dashboard {
+      position: relative;
+      perspective: 2000px;
+    }
+
+    .dashboard-card {
+      position: relative;
+      padding: 32px;
+      border-radius: 32px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(30px);
+      transform: rotateY(-12deg) rotateX(6deg);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 40px 120px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 30%);
+      pointer-events: none;
+    }
+
+    .dashboard-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .balance h2 {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .balance h1 {
+      font-size: 54px;
+      letter-spacing: -0.06em;
+    }
+
+    .growth {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(116, 255, 160, 0.12);
+      color: #8dffb0;
+      font-size: 14px;
+      border: 1px solid rgba(116,255,160,0.15);
+    }
+
+    .chart {
+      height: 220px;
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(139,164,255,0.95), rgba(139,164,255,0.2));
+      box-shadow: 0 10px 30px rgba(139,164,255,0.2);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .stat {
+      padding: 22px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat h3 {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .stat p {
+      font-size: 30px;
+      letter-spacing: -0.05em;
+      font-weight: 700;
+    }
+
+    .features {
+      padding: 80px 0 140px;
+    }
+
+    .section-title {
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(3rem, 5vw, 5rem);
+      letter-spacing: -0.06em;
+      margin-bottom: 18px;
+    }
+
+    .section-title p {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.8;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 32px;
+      padding: 36px;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+      transition: 0.4s ease;
+      backdrop-filter: blur(24px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .large {
+      grid-column: span 7;
+    }
+
+    .medium {
+      grid-column: span 5;
+    }
+
+    .small {
+      grid-column: span 4;
+    }
+
+    .card h3 {
+      font-size: 34px;
+      letter-spacing: -0.05em;
+      margin-bottom: 18px;
+    }
+
+    .card p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 17px;
+      max-width: 440px;
+    }
+
+    .glow {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,164,255,0.2), transparent 70%);
+      top: -60px;
+      right: -60px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-card {
+        transform: none;
+      }
+
+      .bento {
+        grid-template-columns: 1fr;
+      }
+
+      .large,
+      .medium,
+      .small {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 60px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-text p {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
-<body class="antialiased overflow-x-hidden">
+<body>
 
-    <!-- AUTH VIEW -->
-    <div id="authView" class="min-h-screen flex items-center justify-center p-6">
-        <div class="bento-card p-8 w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="inline-block p-3 bg-indigo-500/10 rounded-2xl mb-4">
-                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                </div>
-                <h1 class="text-2xl font-bold">FinanceFlow<span class="text-indigo-400">.</span></h1>
-                <p class="text-slate-500 text-sm">Personal Work & Expense Ledger</p>
-            </div>
+  <nav class="container">
+    <div class="nav-inner">
+      <div class="logo">FinanceFlow</div>
 
-            <div id="loginTab" class="space-y-4">
-                <input type="text" id="userIn" class="input-field w-full" placeholder="Username">
-                <input type="password" id="passIn" class="input-field w-full" placeholder="Password">
-                <div id="loginError" class="error hidden"></div>
-                <button onclick="attemptLogin()" class="w-full bg-indigo-500 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all">Sign In</button>
-                <div class="text-center text-sm text-slate-500">
-                    Don't have an account? <button onclick="switchTab('register')" class="text-indigo-400 hover:text-indigo-300">Create one</button>
-                </div>
-            </div>
+      <div class="nav-links">
+        <a href="#">Product</a>
+        <a href="#">Analytics</a>
+        <a href="#">Security</a>
+        <a href="#">Pricing</a>
+      </div>
 
-            <div id="registerTab" class="space-y-4 hidden">
-                <input type="text" id="regUser" class="input-field w-full" placeholder="Username (3+ chars)">
-                <input type="password" id="regPass" class="input-field w-full" placeholder="Password">
-                <div id="regError" class="error hidden"></div>
-                <button onclick="attemptRegister()" class="w-full bg-indigo-500 hover:bg-indigo-600 py-3 rounded-xl font-bold transition-all">Create Account</button>
-                <div class="text-center text-sm text-slate-500">
-                    Have an account? <button onclick="switchTab('login')" class="text-indigo-400 hover:text-indigo-300">Sign in</button>
-                </div>
-            </div>
+      <button class="nav-button">Get Started</button>
+    </div>
+  </nav>
+
+  <section class="hero container">
+    <div class="hero-grid">
+
+      <div class="hero-text">
+        <span>AI-powered finance platform</span>
+
+        <h1>
+          Money management<br>
+          that feels calm.
+        </h1>
+
+        <p>
+          Track spending, analyze investments, and understand your financial future through a beautifully minimal interface inspired by modern Apple experiences.
+        </p>
+
+        <div class="hero-actions">
+          <button class="primary-btn">Start Free</button>
+          <button class="secondary-btn">Watch Demo</button>
         </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="dashboard-card">
+
+          <div class="dashboard-top">
+            <div class="balance">
+              <h2>Total Balance</h2>
+              <h1>$284k</h1>
+            </div>
+
+            <div class="growth">+14.2%</div>
+          </div>
+
+          <div class="chart">
+            <div class="bar" style="height: 30%"></div>
+            <div class="bar" style="height: 50%"></div>
+            <div class="bar" style="height: 40%"></div>
+            <div class="bar" style="height: 70%"></div>
+            <div class="bar" style="height: 90%"></div>
+            <div class="bar" style="height: 65%"></div>
+            <div class="bar" style="height: 100%"></div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat">
+              <h3>Revenue</h3>
+              <p>$48k</p>
+            </div>
+
+            <div class="stat">
+              <h3>Investments</h3>
+              <p>$126k</p>
+            </div>
+
+            <div class="stat">
+              <h3>Savings</h3>
+              <p>$84k</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="features container">
+
+    <div class="section-title">
+      <h2>Designed for focus.</h2>
+      <p>
+        Every interaction is intentionally minimal, fluid, and distraction-free — helping you focus on your finances without clutter.
+      </p>
     </div>
 
-    <!-- SETUP MODAL -->
-    <div id="setupModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 modal-blur hidden">
-        <div class="bento-card p-8 w-full max-w-sm shadow-2xl border-indigo-500/30">
-            <h2 class="text-xl font-bold mb-2">Initial Setup</h2>
-            <p class="text-slate-400 text-sm mb-6">Configure your starting parameters.</p>
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Starting Balance (€)</label>
-                    <input type="number" id="initBalance" class="input-field w-full" value="0.00">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Standard Daily Rate (€)</label>
-                    <input type="number" id="initRate" class="input-field w-full" value="20.00">
-                </div>
-                <button onclick="completeSetup()" class="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl font-bold transition-all">Save & Start</button>
-            </div>
-        </div>
+    <div class="bento">
+
+      <div class="card large">
+        <div class="glow"></div>
+        <h3>AI Financial Intelligence</h3>
+        <p>
+          Receive proactive insights, spending analysis, and forecasting powered by advanced machine learning models.
+        </p>
+      </div>
+
+      <div class="card medium">
+        <div class="glow"></div>
+        <h3>Live Analytics</h3>
+        <p>
+          Real-time dashboards designed with a premium glass aesthetic and ultra-clean data visualization.
+        </p>
+      </div>
+
+      <div class="card small">
+        <div class="glow"></div>
+        <h3>Secure by default</h3>
+        <p>
+          Bank-level encryption and modern infrastructure built around privacy-first architecture.
+        </p>
+      </div>
+
+      <div class="card small">
+        <div class="glow"></div>
+        <h3>Smart budgeting</h3>
+        <p>
+          Automatically categorize transactions and discover where your money really goes.
+        </p>
+      </div>
+
+      <div class="card large">
+        <div class="glow"></div>
+        <h3>Built for modern finance teams</h3>
+        <p>
+          Seamlessly manage business finances, subscriptions, investments, and cash flow in one unified platform.
+        </p>
+      </div>
+
     </div>
+  </section>
 
-    <!-- DASHBOARD -->
-    <div id="dashboardView" class="max-w-6xl mx-auto px-6 py-12 hidden">
-        <!-- Top Nav -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">FinanceFlow<span class="text-indigo-400">.</span></h1>
-                <p class="text-slate-500 text-sm mt-1">Personal Work & Expense Ledger</p>
-            </div>
-            <div class="flex gap-4">
-                <div class="bg-[#161b22] border border-[#30363d] px-6 py-3 rounded-2xl">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Net Balance</span>
-                    <div class="text-2xl font-mono font-bold text-indigo-400 mt-1" id="statBalance">€0.00</div>
-                </div>
-                <button onclick="logoutUser()" class="p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition" title="Logout">
-                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                </button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Left: Shifts -->
-            <div class="lg:col-span-7">
-                <div class="bento-card p-6 h-full">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold">Shift Ledger</h2>
-                        <button onclick="addShift()" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest">+ Add Day</button>
-                    </div>
-                    <div id="shiftList" class="space-y-2">
-                        <!-- Shifts go here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Expenses -->
-            <div class="lg:col-span-5">
-                <div class="bento-card p-6 mb-8">
-                    <h2 class="text-lg font-bold mb-4">Log Expense</h2>
-                    <div class="space-y-4">
-                        <input type="number" id="expAmount" class="input-field w-full" placeholder="Amount (€)">
-                        <input type="text" id="expDesc" class="input-field w-full" placeholder="Description (e.g. Coffee)">
-                        <button onclick="addExpense()" class="w-full bg-indigo-500 hover:bg-indigo-600 py-3 rounded-xl font-bold">Log Transaction</button>
-                    </div>
-                </div>
-
-                <div class="bento-card p-6">
-                    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Recent Spending</h2>
-                    <div id="expenseList" class="space-y-2">
-                        <!-- Expenses go here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- API Configuration ---
-        const API_URL = window.location.origin + '/api';
-        let token = localStorage.getItem('ff_token');
-        let currentUser = localStorage.getItem('ff_user');
-        let ledger = null;
-
-        // --- Auth Logic ---
-        function switchTab(tab) {
-            document.getElementById('loginTab').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('registerTab').classList.toggle('hidden', tab !== 'register');
-            document.getElementById('loginError').classList.add('hidden');
-            document.getElementById('regError').classList.add('hidden');
-        }
-
-        async function attemptLogin() {
-            const u = document.getElementById('userIn').value;
-            const p = document.getElementById('passIn').value;
-            const errorEl = document.getElementById('loginError');
-
-            if (!u || !p) {
-                errorEl.textContent = 'Please fill all fields';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-
-                if (!res.ok) {
-                    errorEl.textContent = 'Invalid credentials';
-                    errorEl.classList.remove('hidden');
-                    return;
-                }
-
-                const data = await res.json();
-                token = data.token;
-                currentUser = data.username;
-                localStorage.setItem('ff_token', token);
-                localStorage.setItem('ff_user', currentUser);
-
-                enterDashboard();
-            } catch (err) {
-                errorEl.textContent = 'Connection error';
-                errorEl.classList.remove('hidden');
-            }
-        }
-
-        async function attemptRegister() {
-            const u = document.getElementById('regUser').value;
-            const p = document.getElementById('regPass').value;
-            const errorEl = document.getElementById('regError');
-
-            if (!u || !p || u.length < 3) {
-                errorEl.textContent = 'Username must be 3+ characters';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-
-                if (!res.ok) {
-                    errorEl.textContent = 'Username already exists';
-                    errorEl.classList.remove('hidden');
-                    return;
-                }
-
-                const data = await res.json();
-                token = data.token;
-                currentUser = data.username;
-                localStorage.setItem('ff_token', token);
-                localStorage.setItem('ff_user', currentUser);
-
-                enterDashboard();
-            } catch (err) {
-                errorEl.textContent = 'Connection error';
-                errorEl.classList.remove('hidden');
-            }
-        }
-
-        async function enterDashboard() {
-            document.getElementById('authView').classList.add('hidden');
-            
-            try {
-                const res = await fetch(`${API_URL}/ledger`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                ledger = await res.json();
-
-                if (!ledger.isSetup) {
-                    document.getElementById('setupModal').classList.remove('hidden');
-                } else {
-                    document.getElementById('dashboardView').classList.remove('hidden');
-                    render();
-                }
-            } catch (err) {
-                console.error('Error loading ledger:', err);
-            }
-        }
-
-        async function completeSetup() {
-            const balance = parseFloat(document.getElementById('initBalance').value) || 0;
-            const rate = parseFloat(document.getElementById('initRate').value) || 20;
-
-            try {
-                const res = await fetch(`${API_URL}/setup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ baseBalance: balance, defaultRate: rate })
-                });
-
-                const data = await res.json();
-                ledger = data.ledger;
-                document.getElementById('setupModal').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-                render();
-            } catch (err) {
-                console.error('Setup error:', err);
-            }
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('ff_token');
-            localStorage.removeItem('ff_user');
-            token = null;
-            currentUser = null;
-            ledger = null;
-            location.reload();
-        }
-
-        // --- Core API Calls ---
-        async function addShift() {
-            try {
-                const res = await fetch(`${API_URL}/shifts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ rate: ledger.defaultRate })
-                });
-
-                const newShift = await res.json();
-                ledger.shifts.unshift(newShift);
-                render();
-            } catch (err) {
-                console.error('Error adding shift:', err);
-            }
-        }
-
-        async function editShift(id) {
-            const shift = ledger.shifts.find(s => s.id === id);
-            const newVal = prompt("Edit Pay Amount for this shift:", shift.rate);
-            if (newVal === null) return;
-
-            try {
-                const res = await fetch(`${API_URL}/shifts/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ rate: parseFloat(newVal) })
-                });
-
-                const updated = await res.json();
-                const idx = ledger.shifts.findIndex(s => s.id === id);
-                ledger.shifts[idx] = updated;
-                render();
-            } catch (err) {
-                console.error('Error editing shift:', err);
-            }
-        }
-
-        async function toggleShift(id) {
-            const shift = ledger.shifts.find(s => s.id === id);
-
-            try {
-                const res = await fetch(`${API_URL}/shifts/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ paid: !shift.paid })
-                });
-
-                const updated = await res.json();
-                const idx = ledger.shifts.findIndex(s => s.id === id);
-                ledger.shifts[idx] = updated;
-                render();
-            } catch (err) {
-                console.error('Error toggling shift:', err);
-            }
-        }
-
-        async function deleteShift(id) {
-            if (!confirm("Delete this entry?")) return;
-
-            try {
-                await fetch(`${API_URL}/shifts/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                ledger.shifts = ledger.shifts.filter(s => s.id !== id);
-                render();
-            } catch (err) {
-                console.error('Error deleting shift:', err);
-            }
-        }
-
-        async function addExpense() {
-            const amt = document.getElementById('expAmount').value;
-            const desc = document.getElementById('expDesc').value;
-
-            if (!amt || !desc) return;
-
-            try {
-                const res = await fetch(`${API_URL}/expenses`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        amount: parseFloat(amt),
-                        description: desc
-                    })
-                });
-
-                const newExp = await res.json();
-                ledger.expenses.unshift(newExp);
-                document.getElementById('expAmount').value = '';
-                document.getElementById('expDesc').value = '';
-                render();
-            } catch (err) {
-                console.error('Error adding expense:', err);
-            }
-        }
-
-        async function deleteExp(id) {
-            try {
-                await fetch(`${API_URL}/expenses/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                ledger.expenses = ledger.expenses.filter(e => e.id !== id);
-                render();
-            } catch (err) {
-                console.error('Error deleting expense:', err);
-            }
-        }
-
-        // --- UI Rendering ---
-        function render() {
-            // Render Shifts
-            const sList = document.getElementById('shiftList');
-            sList.innerHTML = ledger.shifts.map(s => `
-                <div class="flex items-center justify-between p-4 bg-white/5 border border-transparent hover:border-slate-700 rounded-xl transition group">
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" class="custom-cb" ${s.paid ? 'checked' : ''} onchange="toggleShift(${s.id})">
-                        <div>
-                            <div class="text-sm font-mono text-slate-300">${s.date}</div>
-                            <div class="text-[10px] font-bold ${s.paid ? 'text-emerald-500' : 'text-rose-500'} uppercase">
-                                ${s.paid ? 'Pagato' : 'Non Pagato'}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm font-bold">€${s.rate.toFixed(2)}</span>
-                        <div class="opacity-0 group-hover:opacity-100 flex gap-2 transition">
-                            <button onclick="editShift(${s.id})" class="text-xs text-indigo-400 underline">Edit</button>
-                            <button onclick="deleteShift(${s.id})" class="text-xs text-rose-500">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('') || '<p class="text-slate-600 text-center py-10 text-sm italic">No shifts recorded yet.</p>';
-
-            // Render Expenses
-            const eList = document.getElementById('expenseList');
-            eList.innerHTML = ledger.expenses.map(e => `
-                <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl group">
-                    <div>
-                        <div class="text-sm font-medium text-slate-200">${e.description}</div>
-                        <div class="text-[10px] text-slate-500 font-bold uppercase">${e.date}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-rose-400 font-bold text-sm">-€${e.amount.toFixed(2)}</span>
-                        <button onclick="deleteExp(${e.id})" class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-white">&times;</button>
-                    </div>
-                </div>
-            `).join('');
-
-            // Totals
-            const earnings = ledger.shifts.filter(s => s.paid).reduce((sum, s) => sum + s.rate, 0);
-            const spend = ledger.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const final = ledger.baseBalance + earnings - spend;
-            
-            document.getElementById('statBalance').textContent = `€${final.toFixed(2)}`;
-        }
-
-        // --- Init ---
-        window.addEventListener('load', () => {
-            if (token && currentUser) {
-                enterDashboard();
-            }
-        });
-    </script>
 </body>
 </html>

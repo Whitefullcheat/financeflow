@@ -3,81 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanceFlow | Pro</title>
+    <title>FinanceFlow | Professional Ledger</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #090d16;
-            --bg-card: #111827;
-            --bg-input: #1f2937;
-            --accent: #6366f1;
-            --text-main: #f9fafb;
-            --border: #374151;
+            --bg-main: #090b0f;
+            --bg-surface: #121620;
+            --bg-input: #181d2a;
+            --color-primary: #4f46e5;
+            --color-primary-hover: #4338ca;
+            --border-muted: #22293a;
+            --text-muted: #94a3b8;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            letter-spacing: -0.02em;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: #f8fafc;
+            letter-spacing: -0.01em;
         }
 
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .bento-card {
-            background: rgba(17, 24, 39, 0.7);
-            border: 1px solid rgba(55, 65, 81, 0.5);
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .glass-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-muted);
+            border-radius: 16px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .bento-card:hover {
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        .glass-card:hover {
+            border-color: #2e374f;
         }
 
-        .input-field {
+        .input-control {
             background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            color: white;
+            border: 1px solid var(--border-muted);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 0.875rem;
             transition: all 0.2s ease;
         }
 
-        .input-field:focus {
-            border-color: var(--accent);
+        .input-control:focus {
+            border-color: #6366f1;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-            background: #111827;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+            background: #131722;
         }
 
-        .custom-cb {
+        .checkbox-custom {
             appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
+            width: 18px;
+            height: 18px;
+            border: 1px solid #334155;
+            border-radius: 5px;
             cursor: pointer;
             position: relative;
-            transition: all 0.2s ease;
+            background: var(--bg-input);
+            transition: all 0.15s ease;
         }
         
-        .custom-cb:checked { 
+        .checkbox-custom:checked { 
             background: #10b981; 
             border-color: #10b981; 
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
         }
 
-        .custom-cb:checked::after {
+        .checkbox-custom:checked::after {
             content: '';
             position: absolute;
-            width: 5px;
-            height: 10px;
+            width: 4px;
+            height: 8px;
             border: solid white;
             border-width: 0 2px 2px 0;
             left: 6px;
@@ -85,20 +85,20 @@
             transform: rotate(45deg);
         }
 
-        .modal-blur {
-            backdrop-filter: blur(16px);
-            background: rgba(4, 6, 10, 0.8);
+        .blur-overlay {
+            backdrop-filter: blur(12px);
+            background: rgba(5, 7, 10, 0.8);
         }
 
         .hidden { display: none !important; }
         
-        .spinner {
-            border: 3px solid rgba(99, 102, 241, 0.1);
-            border-top: 3px solid #6366f1;
+        .loader {
+            border: 2px solid rgba(99, 102, 241, 0.1);
+            border-top: 2px solid #6366f1;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 0.8s linear infinite;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.7s linear infinite;
         }
 
         @keyframes spin {
@@ -106,124 +106,143 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error { color: #f87171; font-size: 13px; font-weight: 500; }
-        .success { color: #34d399; font-size: 13px; font-weight: 500; }
+        .error-badge { color: #f87171; font-size: 13px; font-weight: 500; }
     </style>
 </head>
-<body class="antialiased overflow-x-hidden min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-slate-950 to-slate-950">
+<body class="antialiased min-h-screen bg-slate-950">
 
     <!-- AUTH VIEW -->
-    <div id="authView" class="min-h-screen flex items-center justify-center p-6">
-        <div class="bento-card p-10 w-full max-w-md shadow-2xl relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
-            <div class="text-center mb-8">
-                <div class="inline-flex p-3.5 bg-indigo-500/10 rounded-2xl mb-4 text-indigo-400 border border-indigo-500/20">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    <div id="authView" class="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+        <div class="glass-card p-10 w-full max-w-md shadow-2xl relative">
+            <div class="mb-8">
+                <div class="flex items-center gap-2.5 mb-2">
+                    <div class="p-2 bg-indigo-600/10 rounded-lg text-indigo-400 border border-indigo-500/10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 18c5 0 9-2.015 9-4.5S17 10.5 12 10.5c-5 0-9 2.015-9 4.5s4 4.5 9 4.5z"/></svg>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white">FinanceFlow<span class="text-indigo-500">.</span></span>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">FinanceFlow<span class="text-indigo-400">.</span></h1>
-                <p class="text-slate-400 text-sm mt-1.5">Personal Work & Expense Ledger</p>
+                <p class="text-slate-400 text-xs">Enterprise Personal Portfolio Ledger</p>
             </div>
 
             <div id="loginTab" class="space-y-4">
-                <input type="text" id="userIn" class="input-field w-full placeholder:text-slate-500 text-sm" placeholder="Username">
-                <input type="password" id="passIn" class="input-field w-full placeholder:text-slate-500 text-sm" placeholder="Password">
-                <div id="loginError" class="error hidden bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-xl"></div>
-                <button onclick="attemptLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] py-3.5 rounded-xl font-semibold text-white tracking-wide shadow-lg shadow-indigo-600/20 transition-all">Sign In</button>
-                <div class="text-center text-sm text-slate-400 pt-2">
-                    Don't have an account? <button onclick="switchTab('register')" class="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-4 decoration-indigo-500/30">Create one</button>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Username</label>
+                    <input type="text" id="userIn" class="input-control w-full placeholder:text-slate-600" placeholder="Enter username">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Password</label>
+                    <input type="password" id="passIn" class="input-control w-full placeholder:text-slate-600" placeholder="••••••••">
+                </div>
+                <div id="loginError" class="error-badge hidden bg-rose-500/5 border border-rose-500/10 px-4 py-2.5 rounded-lg"></div>
+                <button onclick="attemptLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] py-3 rounded-lg font-medium text-sm text-white tracking-wide transition-all shadow-sm">Continue</button>
+                <div class="text-center text-xs text-slate-400 pt-2">
+                    New operator? <button onclick="switchTab('register')" class="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-4 decoration-indigo-500/20">Request access</button>
                 </div>
             </div>
 
             <div id="registerTab" class="space-y-4 hidden">
-                <input type="text" id="regUser" class="input-field w-full placeholder:text-slate-500 text-sm" placeholder="Username (3+ chars)">
-                <input type="password" id="regPass" class="input-field w-full placeholder:text-slate-500 text-sm" placeholder="Password">
-                <div id="regError" class="error hidden bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-xl"></div>
-                <button onclick="attemptRegister()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] py-3.5 rounded-xl font-semibold text-white tracking-wide shadow-lg shadow-indigo-600/20 transition-all">Create Account</button>
-                <div class="text-center text-sm text-slate-400 pt-2">
-                    Have an account? <button onclick="switchTab('login')" class="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-4 decoration-indigo-500/30">Sign in</button>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Desired Username</label>
+                    <input type="text" id="regUser" class="input-control w-full placeholder:text-slate-600" placeholder="Minimum 3 characters">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Secure Password</label>
+                    <input type="password" id="regPass" class="input-control w-full placeholder:text-slate-600" placeholder="••••••••">
+                </div>
+                <div id="regError" class="error-badge hidden bg-rose-500/5 border border-rose-500/10 px-4 py-2.5 rounded-lg"></div>
+                <button onclick="attemptRegister()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] py-3 rounded-lg font-medium text-sm text-white tracking-wide transition-all shadow-sm">Create Account</button>
+                <div class="text-center text-xs text-slate-400 pt-2">
+                    Registered user? <button onclick="switchTab('login')" class="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-4 decoration-indigo-500/20">Return to sign in</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- SETUP MODAL -->
-    <div id="setupModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 modal-blur hidden">
-        <div class="bento-card p-8 w-full max-w-md shadow-2xl border-indigo-500/30 bg-slate-900/90 relative">
-            <h2 class="text-2xl font-bold text-white mb-1">Initial Setup</h2>
-            <p class="text-slate-400 text-sm mb-6">Configure your profile parameters to get started.</p>
+    <div id="setupModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 blur-overlay hidden">
+        <div class="glass-card p-8 w-full max-w-md shadow-2xl bg-slate-900/90 border-slate-800">
+            <h2 class="text-lg font-semibold text-white mb-1">Accounting Parameters</h2>
+            <p class="text-slate-400 text-xs mb-6">Initialize system metrics for ledger scaling.</p>
             <div class="space-y-5">
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Starting Balance</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Base Starting Balance</label>
                     <div class="relative">
-                        <span class="absolute left-4 top-3.5 text-slate-500 font-mono text-sm">€</span>
-                        <input type="number" id="initBalance" class="input-field w-full pl-8 font-mono" value="0.00">
+                        <span class="absolute left-4 top-3 text-slate-500 font-mono text-xs">EUR</span>
+                        <input type="number" id="initBalance" class="input-control w-full pl-12 font-mono" value="0.00">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Standard Daily Rate</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Standard Variable Rate</label>
                     <div class="relative">
-                        <span class="absolute left-4 top-3.5 text-slate-500 font-mono text-sm">€</span>
-                        <input type="number" id="initRate" class="input-field w-full pl-8 font-mono" value="20.00">
+                        <span class="absolute left-4 top-3 text-slate-500 font-mono text-xs">EUR</span>
+                        <input type="number" id="initRate" class="input-control w-full pl-12 font-mono" value="20.00">
                     </div>
                 </div>
-                <button onclick="completeSetup()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 rounded-xl font-semibold text-white tracking-wide shadow-lg shadow-emerald-600/10 active:scale-[0.98] transition-all mt-2">Save & Open Ledger</button>
+                <button onclick="completeSetup()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg font-medium text-sm text-white active:scale-[0.99] transition-all mt-2">Initialize System</button>
             </div>
         </div>
     </div>
 
     <!-- DASHBOARD -->
-    <div id="dashboardView" class="max-w-6xl mx-auto px-6 py-12 hidden">
+    <div id="dashboardView" class="max-w-6xl mx-auto px-6 py-10 hidden">
         <!-- Top Nav -->
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12 border-b border-slate-800/60 pb-8">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-slate-900 pb-6">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-white">FinanceFlow<span class="text-indigo-500">.</span></h1>
-                <p class="text-slate-400 text-sm mt-1">Personal Work & Expense Ledger</p>
-            </div>
-            <div class="flex items-center gap-4 w-full sm:w-auto">
-                <div class="bg-slate-900/80 border border-slate-800/80 px-6 py-3.5 rounded-2xl flex-1 sm:flex-none min-w-[200px] shadow-sm">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Total Net Balance</span>
-                    <div class="text-3xl font-mono font-bold text-indigo-400 tracking-tight" id="statBalance">€0.00</div>
+                <div class="flex items-center gap-2">
+                    <span class="text-lg font-bold tracking-tight text-white">FinanceFlow<span class="text-indigo-500">.</span></span>
+                    <span class="text-[10px] bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-medium px-2 py-0.5 rounded-full">Pro v2.4</span>
                 </div>
-                <button onclick="logoutUser()" class="p-4 bg-slate-900/60 border border-slate-800/60 text-slate-400 rounded-2xl hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/20 transition-all duration-200" title="Logout">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <p class="text-slate-500 text-xs mt-0.5">Asset Management System</p>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="bg-slate-900/50 border border-slate-900 px-5 py-2.5 rounded-xl flex-1 sm:flex-none min-w-[180px]">
+                    <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-widest block mb-0.5">Net Portfolio Liquid</span>
+                    <div class="text-2xl font-mono font-medium text-indigo-400 tracking-tight" id="statBalance">€0.00</div>
+                </div>
+                <button onclick="logoutUser()" class="p-3 bg-slate-900/30 border border-slate-900 text-slate-400 rounded-xl hover:bg-rose-950/20 hover:text-rose-400 hover:border-rose-900/30 transition-all" title="Terminate Session">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
                 </button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left: Shifts -->
             <div class="lg:col-span-7">
-                <div class="bento-card p-6 h-full">
+                <div class="glass-card p-6 h-full">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h2 class="text-xl font-bold text-white tracking-tight">Shift Ledger</h2>
-                            <p class="text-xs text-slate-400 mt-0.5">Track and update working cycles</p>
+                            <h2 class="text-base font-semibold text-white tracking-tight">Shift Ledger</h2>
+                            <p class="text-xs text-slate-500">Document operational execution periods</p>
                         </div>
-                        <button onclick="addShift()" class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-indigo-600/10 uppercase tracking-wider">+ Add Day</button>
+                        <button onclick="addShift()" class="text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            Log Cycle
+                        </button>
                     </div>
-                    <div id="shiftList" class="space-y-3">
+                    <div id="shiftList" class="space-y-2.5">
                         <!-- Shifts go here -->
                     </div>
                 </div>
             </div>
 
             <!-- Right: Expenses -->
-            <div class="lg:col-span-5 space-y-8">
-                <div class="bento-card p-6">
-                    <h2 class="text-xl font-bold text-white tracking-tight mb-1">Log Expense</h2>
-                    <p class="text-xs text-slate-400 mb-5">Record transactions instantly</p>
-                    <div class="space-y-4">
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-card p-6">
+                    <h2 class="text-base font-semibold text-white tracking-tight mb-1">Debit Entry</h2>
+                    <p class="text-xs text-slate-500 mb-4">Record immediate outbound cash flow</p>
+                    <div class="space-y-3.5">
                         <div class="relative">
-                            <span class="absolute left-4 top-3.5 text-slate-500 font-mono text-sm">€</span>
-                            <input type="number" id="expAmount" class="input-field w-full pl-8 font-mono text-sm" placeholder="0.00">
+                            <span class="absolute left-3.5 top-3 text-slate-500 font-mono text-xs">EUR</span>
+                            <input type="number" id="expAmount" class="input-control w-full pl-12 font-mono" placeholder="0.00">
                         </div>
-                        <input type="text" id="expDesc" class="input-field w-full text-sm placeholder:text-slate-500" placeholder="Description (e.g. Coffee)">
-                        <button onclick="addExpense()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700/60 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-600/10 text-white py-3.5 rounded-xl font-semibold text-sm transition-all duration-200">Log Transaction</button>
+                        <input type="text" id="expDesc" class="input-field input-control w-full" placeholder="Allocation target (e.g. Server Hosting)">
+                        <button onclick="addExpense()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/50 text-xs py-3 rounded-lg font-medium tracking-wide transition-all active:scale-[0.99]">Execute Transaction</button>
                     </div>
                 </div>
 
-                <div class="bento-card p-6">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Recent Spending</h2>
-                    <div id="expenseList" class="space-y-3">
+                <div class="glass-card p-6">
+                    <h2 class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-4">Statement Archive</h2>
+                    <div id="expenseList" class="space-y-2.5">
                         <!-- Expenses go here -->
                     </div>
                 </div>
@@ -503,40 +522,40 @@
             // Render Shifts
             const sList = document.getElementById('shiftList');
             sList.innerHTML = ledger.shifts.map(s => `
-                <div class="flex items-center justify-between p-4.5 bg-slate-900/40 border border-slate-800/60 hover:border-slate-700/80 rounded-2xl transition-all duration-200 group hover:scale-[1.01]">
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" class="custom-cb" ${s.paid ? 'checked' : ''} onchange="toggleShift(${s.id})">
+                <div class="flex items-center justify-between p-3.5 bg-slate-900/30 border border-slate-900 rounded-xl hover:border-slate-800 transition-all group">
+                    <div class="flex items-center gap-3.5">
+                        <input type="checkbox" class="checkbox-custom" ${s.paid ? 'checked' : ''} onchange="toggleShift(${s.id})">
                         <div>
-                            <div class="text-sm font-mono font-medium text-slate-200">${s.date}</div>
-                            <div class="inline-flex items-center mt-1 px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider uppercase ${s.paid ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                                ${s.paid ? 'Pagato' : 'Non Pagato'}
+                            <div class="text-xs font-mono font-medium text-slate-300 tracking-tight">${s.date}</div>
+                            <div class="inline-flex items-center mt-1 text-[9px] font-semibold tracking-wider uppercase ${s.paid ? 'text-emerald-400' : 'text-amber-500'}">
+                                ${s.paid ? '• Complete' : '• Pending'}
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-base font-mono font-bold text-white">€${s.rate.toFixed(2)}</span>
-                        <div class="opacity-0 group-hover:opacity-100 flex gap-3 transition-opacity duration-200">
-                            <button onclick="editShift(${s.id})" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 underline underline-offset-2">Edit</button>
-                            <button onclick="deleteShift(${s.id})" class="text-xs font-medium text-rose-400 hover:text-rose-300">Delete</button>
+                        <span class="text-sm font-mono font-medium text-slate-200">€${s.rate.toFixed(2)}</span>
+                        <div class="opacity-0 group-hover:opacity-100 flex gap-2.5 transition-opacity duration-150">
+                            <button onclick="editShift(${s.id})" class="text-xs text-slate-500 hover:text-slate-300">Modifica</button>
+                            <button onclick="deleteShift(${s.id})" class="text-xs text-rose-500/70 hover:text-rose-400">Rimuovi</button>
                         </div>
                     </div>
                 </div>
-            `).join('') || '<p class="text-slate-500 text-center py-12 text-sm italic">No shifts recorded yet.</p>';
+            `).join('') || '<p class="text-slate-600 text-center py-10 text-xs italic">No shifts recorded yet.</p>';
 
             // Render Expenses
             const eList = document.getElementById('expenseList');
             eList.innerHTML = ledger.expenses.map(e => `
-                <div class="flex justify-between items-center p-4 bg-slate-900/40 border border-slate-800/40 rounded-xl group hover:border-slate-700/60 transition-all">
+                <div class="flex justify-between items-center p-3 border-b border-slate-900/60 group hover:bg-slate-900/20 px-1 rounded-lg transition-all">
                     <div>
-                        <div class="text-sm font-semibold text-slate-200">${e.description}</div>
-                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">${e.date}</div>
+                        <div class="text-xs font-medium text-slate-300">${e.description}</div>
+                        <div class="text-[9px] text-slate-600 font-mono mt-0.5">${e.date}</div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="text-rose-400 font-mono font-bold text-sm">-€${e.amount.toFixed(2)}</span>
-                        <button onclick="deleteExp(${e.id})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 font-bold transition-all text-lg leading-none">&times;</button>
+                        <span class="text-slate-400 font-mono text-xs">-€${e.amount.toFixed(2)}</span>
+                        <button onclick="deleteExp(${e.id})" class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 font-medium transition-all text-xs">Delete</button>
                     </div>
                 </div>
-            `).join('') || '<p class="text-slate-500 text-center py-6 text-sm italic">No transactions.</p>';
+            `).join('') || '<p class="text-slate-600 text-center py-4 text-xs italic">No transactions logging.</p>';
 
             // Totals
             const earnings = ledger.shifts.filter(s => s.paid).reduce((sum, s) => sum + s.rate, 0);

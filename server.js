@@ -191,7 +191,7 @@ app.post('/api/shifts', verifyToken, async (req, res) => {
 
 app.put('/api/shifts/:id', verifyToken, async (req, res) => {
   try {
-    const { rate, paid } = req.body;
+    const { rate, paid, date } = req.body;
 
     const ledger = await Ledger.findOne({ userId: req.userId });
     if (!ledger) {
@@ -205,6 +205,7 @@ app.put('/api/shifts/:id', verifyToken, async (req, res) => {
 
     if (rate !== undefined) shift.rate = parseFloat(rate);
     if (paid !== undefined) shift.paid = paid;
+    if (date !== undefined) shift.date = date;
 
     await ledger.save();
     res.json(shift);

@@ -56,10 +56,19 @@
             background: #131722;
         }
 
+        /* Remove number input arrows */
+        .input-control[type=number]::-webkit-inner-spin-button,
+        .input-control[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-control[type=number] { -moz-appearance: textfield; }
+
         .checkbox-custom {
             appearance: none;
             width: 18px;
             height: 18px;
+            min-width: 18px;
             border: 1px solid #334155;
             border-radius: 5px;
             cursor: pointer;
@@ -67,10 +76,10 @@
             background: var(--bg-input);
             transition: all 0.15s ease;
         }
-        
-        .checkbox-custom:checked { 
-            background: #10b981; 
-            border-color: #10b981; 
+
+        .checkbox-custom:checked {
+            background: #10b981;
+            border-color: #10b981;
         }
 
         .checkbox-custom:checked::after {
@@ -87,11 +96,11 @@
 
         .blur-overlay {
             backdrop-filter: blur(12px);
-            background: rgba(5, 7, 10, 0.8);
+            background: rgba(5, 7, 10, 0.85);
         }
 
         .hidden { display: none !important; }
-        
+
         .loader {
             border: 2px solid rgba(99, 102, 241, 0.1);
             border-top: 2px solid #6366f1;
@@ -107,6 +116,66 @@
         }
 
         .error-badge { color: #f87171; font-size: 13px; font-weight: 500; }
+
+        /* Shift action buttons: hidden on hover-capable devices, always visible on touch */
+        .shift-actions {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .group:hover .shift-actions {
+            opacity: 1;
+        }
+        @media (hover: none) {
+            .shift-actions {
+                opacity: 1 !important;
+            }
+        }
+
+        /* Calendar day cells */
+        .cal-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            color: #cbd5e1;
+            user-select: none;
+        }
+        .cal-day:hover {
+            background: #1e2535;
+            color: #ffffff;
+        }
+        .cal-day.selected {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+        .cal-day.today {
+            background: #1e2535;
+            color: #818cf8;
+        }
+        .cal-day.today.selected {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+        .cal-day.empty {
+            cursor: default;
+        }
+        .cal-day.empty:hover {
+            background: transparent;
+        }
+
+        /* Modal animation */
+        .modal-card {
+            animation: modalIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen bg-slate-950">
@@ -183,10 +252,81 @@
         </div>
     </div>
 
+    <!-- EDIT SHIFT MODAL -->
+    <div id="editShiftModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 blur-overlay hidden">
+        <div class="modal-card glass-card p-6 w-full max-w-sm shadow-2xl bg-slate-900/95 border-slate-800">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-base font-semibold text-white">Edit Shift</h2>
+                <button onclick="closeEditModal()" class="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-800 rounded-lg transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Custom Date Picker -->
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Date</label>
+                <div class="bg-[#0e1119] border border-slate-800 rounded-xl p-3">
+                    <!-- Month navigation -->
+                    <div class="flex items-center justify-between mb-3">
+                        <button onclick="pickerPrevMonth()" class="p-1.5 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white active:scale-95">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                        </button>
+                        <span id="pickerMonthLabel" class="text-sm font-semibold text-white select-none"></span>
+                        <button onclick="pickerNextMonth()" class="p-1.5 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white active:scale-95">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                        </button>
+                    </div>
+                    <!-- Weekday headers -->
+                    <div class="grid grid-cols-7 mb-1">
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Mo</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Tu</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">We</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Th</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Fr</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Sa</div>
+                        <div class="text-center text-[10px] font-semibold text-slate-600 py-1">Su</div>
+                    </div>
+                    <!-- Day grid -->
+                    <div id="pickerDayGrid" class="grid grid-cols-7 gap-y-0.5"></div>
+                </div>
+                <div id="editDateError" class="hidden mt-1.5 text-[11px] text-rose-400">Please select a date</div>
+            </div>
+
+            <!-- Rate input -->
+            <div class="mb-5">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pay Amount</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-xs">EUR</span>
+                    <input type="number" id="editRate" class="input-control w-full pl-12 font-mono" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="flex gap-2.5">
+                <button onclick="closeEditModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-300 text-sm font-medium rounded-xl transition-all border border-slate-700/50">Cancel</button>
+                <button onclick="saveEditShift()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white text-sm font-medium rounded-xl transition-all shadow-sm">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM DELETE MODAL -->
+    <div id="confirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 blur-overlay hidden">
+        <div class="modal-card glass-card p-6 w-full max-w-xs shadow-2xl bg-slate-900/95 border-slate-800 text-center">
+            <div class="w-11 h-11 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-1">Delete Shift</h3>
+            <p class="text-xs text-slate-400 mb-5">This action cannot be undone.</p>
+            <div class="flex gap-2.5">
+                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-300 text-sm font-medium rounded-xl transition-all border border-slate-700/50">Cancel</button>
+                <button onclick="confirmDeleteShift()" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white text-sm font-medium rounded-xl transition-all">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- DASHBOARD -->
-    <div id="dashboardView" class="max-w-6xl mx-auto px-6 py-10 hidden">
+    <div id="dashboardView" class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 hidden">
         <!-- Top Nav -->
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-slate-900 pb-6">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-10 border-b border-slate-900 pb-6">
             <div>
                 <div class="flex items-center gap-2">
                     <span class="text-lg font-bold tracking-tight text-white">FinanceFlow<span class="text-indigo-500">.</span></span>
@@ -195,9 +335,9 @@
                 <p class="text-slate-500 text-xs mt-0.5">Asset Management System</p>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
-                <div class="bg-slate-900/50 border border-slate-900 px-5 py-2.5 rounded-xl flex-1 sm:flex-none min-w-[180px]">
+                <div class="bg-slate-900/50 border border-slate-900 px-5 py-2.5 rounded-xl flex-1 sm:flex-none min-w-[160px]">
                     <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-widest block mb-0.5">Net Portfolio Liquid</span>
-                    <div class="text-2xl font-mono font-medium text-indigo-400 tracking-tight" id="statBalance">€0.00</div>
+                    <div class="text-xl sm:text-2xl font-mono font-medium text-indigo-400 tracking-tight" id="statBalance">€0.00</div>
                 </div>
                 <button onclick="logoutUser()" class="p-3 bg-slate-900/30 border border-slate-900 text-slate-400 rounded-xl hover:bg-rose-950/20 hover:text-rose-400 hover:border-rose-900/30 transition-all" title="Terminate Session">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
@@ -208,13 +348,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left: Shifts -->
             <div class="lg:col-span-7">
-                <div class="glass-card p-6 h-full">
+                <div class="glass-card p-5 sm:p-6 h-full">
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-base font-semibold text-white tracking-tight">Shift Ledger</h2>
                             <p class="text-xs text-slate-500">Document operational execution periods</p>
                         </div>
-                        <button onclick="addShift()" class="text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+                        <button onclick="addShift()" class="text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 active:scale-[0.97] px-3.5 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                             Log Cycle
                         </button>
@@ -227,20 +367,20 @@
 
             <!-- Right: Expenses -->
             <div class="lg:col-span-5 space-y-6">
-                <div class="glass-card p-6">
+                <div class="glass-card p-5 sm:p-6">
                     <h2 class="text-base font-semibold text-white tracking-tight mb-1">Debit Entry</h2>
                     <p class="text-xs text-slate-500 mb-4">Record immediate outbound cash flow</p>
                     <div class="space-y-3.5">
                         <div class="relative">
-                            <span class="absolute left-3.5 top-3 text-slate-500 font-mono text-xs">EUR</span>
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-xs">EUR</span>
                             <input type="number" id="expAmount" class="input-control w-full pl-12 font-mono" placeholder="0.00">
                         </div>
                         <input type="text" id="expDesc" class="input-field input-control w-full" placeholder="Allocation target (e.g. Server Hosting)">
-                        <button onclick="addExpense()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/50 text-xs py-3 rounded-lg font-medium tracking-wide transition-all active:scale-[0.99]">Execute Transaction</button>
+                        <button onclick="addExpense()" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-slate-200 border border-slate-700/50 text-xs py-3 rounded-lg font-medium tracking-wide transition-all">Execute Transaction</button>
                     </div>
                 </div>
 
-                <div class="glass-card p-6">
+                <div class="glass-card p-5 sm:p-6">
                     <h2 class="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-4">Statement Archive</h2>
                     <div id="expenseList" class="space-y-2.5">
                         <!-- Expenses go here -->
@@ -269,32 +409,27 @@
             const u = document.getElementById('userIn').value;
             const p = document.getElementById('passIn').value;
             const errorEl = document.getElementById('loginError');
-
             if (!u || !p) {
                 errorEl.textContent = 'Please fill all fields';
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             try {
                 const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: u, password: p })
                 });
-
                 if (!res.ok) {
                     errorEl.textContent = 'Invalid credentials';
                     errorEl.classList.remove('hidden');
                     return;
                 }
-
                 const data = await res.json();
                 token = data.token;
                 currentUser = data.username;
                 localStorage.setItem('ff_token', token);
                 localStorage.setItem('ff_user', currentUser);
-
                 enterDashboard();
             } catch (err) {
                 errorEl.textContent = 'Connection error';
@@ -306,32 +441,27 @@
             const u = document.getElementById('regUser').value;
             const p = document.getElementById('regPass').value;
             const errorEl = document.getElementById('regError');
-
             if (!u || !p || u.length < 3) {
                 errorEl.textContent = 'Username must be 3+ characters';
                 errorEl.classList.remove('hidden');
                 return;
             }
-
             try {
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: u, password: p })
                 });
-
                 if (!res.ok) {
                     errorEl.textContent = 'Username already exists';
                     errorEl.classList.remove('hidden');
                     return;
                 }
-
                 const data = await res.json();
                 token = data.token;
                 currentUser = data.username;
                 localStorage.setItem('ff_token', token);
                 localStorage.setItem('ff_user', currentUser);
-
                 enterDashboard();
             } catch (err) {
                 errorEl.textContent = 'Connection error';
@@ -341,13 +471,11 @@
 
         async function enterDashboard() {
             document.getElementById('authView').classList.add('hidden');
-            
             try {
                 const res = await fetch(`${API_URL}/ledger`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 ledger = await res.json();
-
                 if (!ledger.isSetup) {
                     document.getElementById('setupModal').classList.remove('hidden');
                 } else {
@@ -362,17 +490,12 @@
         async function completeSetup() {
             const balance = parseFloat(document.getElementById('initBalance').value) || 0;
             const rate = parseFloat(document.getElementById('initRate').value) || 20;
-
             try {
                 const res = await fetch(`${API_URL}/setup`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ baseBalance: balance, defaultRate: rate })
                 });
-
                 const data = await res.json();
                 ledger = data.ledger;
                 document.getElementById('setupModal').classList.add('hidden');
@@ -386,24 +509,18 @@
         function logoutUser() {
             localStorage.removeItem('ff_token');
             localStorage.removeItem('ff_user');
-            token = null;
-            currentUser = null;
-            ledger = null;
+            token = null; currentUser = null; ledger = null;
             location.reload();
         }
 
-        // --- Core API Calls ---
+        // --- Shift API Calls ---
         async function addShift() {
             try {
                 const res = await fetch(`${API_URL}/shifts`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ rate: ledger.defaultRate })
                 });
-
                 const newShift = await res.json();
                 ledger.shifts.unshift(newShift);
                 render();
@@ -412,43 +529,14 @@
             }
         }
 
-        async function editShift(id) {
-            const shift = ledger.shifts.find(s => s.id === id);
-            const newVal = prompt("Edit Pay Amount for this shift:", shift.rate);
-            if (newVal === null) return;
-
-            try {
-                const res = await fetch(`${API_URL}/shifts/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ rate: parseFloat(newVal) })
-                });
-
-                const updated = await res.json();
-                const idx = ledger.shifts.findIndex(s => s.id === id);
-                ledger.shifts[idx] = updated;
-                render();
-            } catch (err) {
-                console.error('Error editing shift:', err);
-            }
-        }
-
         async function toggleShift(id) {
             const shift = ledger.shifts.find(s => s.id === id);
-
             try {
                 const res = await fetch(`${API_URL}/shifts/${id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ paid: !shift.paid })
                 });
-
                 const updated = await res.json();
                 const idx = ledger.shifts.findIndex(s => s.id === id);
                 ledger.shifts[idx] = updated;
@@ -458,41 +546,16 @@
             }
         }
 
-        async function deleteShift(id) {
-            if (!confirm("Delete this entry?")) return;
-
-            try {
-                await fetch(`${API_URL}/shifts/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                ledger.shifts = ledger.shifts.filter(s => s.id !== id);
-                render();
-            } catch (err) {
-                console.error('Error deleting shift:', err);
-            }
-        }
-
         async function addExpense() {
             const amt = document.getElementById('expAmount').value;
             const desc = document.getElementById('expDesc').value;
-
             if (!amt || !desc) return;
-
             try {
                 const res = await fetch(`${API_URL}/expenses`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        amount: parseFloat(amt),
-                        description: desc
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ amount: parseFloat(amt), description: desc })
                 });
-
                 const newExp = await res.json();
                 ledger.expenses.unshift(newExp);
                 document.getElementById('expAmount').value = '';
@@ -509,7 +572,6 @@
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-
                 ledger.expenses = ledger.expenses.filter(e => e.id !== id);
                 render();
             } catch (err) {
@@ -517,26 +579,213 @@
             }
         }
 
-        // --- UI Rendering ---
+        // ─── Custom Date Picker ───────────────────────────────────────────────
+
+        const MONTHS = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+
+        let picker = {
+            year: new Date().getFullYear(),
+            month: new Date().getMonth(), // 0-indexed
+            selDay: null,
+            selMonth: null,             // 0-indexed, month of the selected day
+            editingId: null
+        };
+
+        function getDaysInMonth(y, m) {
+            return new Date(y, m + 1, 0).getDate();
+        }
+
+        // Returns Monday-based first weekday offset (0 = Mon, 6 = Sun)
+        function getFirstWeekday(y, m) {
+            const d = new Date(y, m, 1).getDay(); // 0=Sun
+            return d === 0 ? 6 : d - 1;
+        }
+
+        function renderPicker() {
+            document.getElementById('pickerMonthLabel').textContent =
+                `${MONTHS[picker.month]} ${picker.year}`;
+
+            const grid = document.getElementById('pickerDayGrid');
+            grid.innerHTML = '';
+
+            const daysInMonth = getDaysInMonth(picker.year, picker.month);
+            const offset = getFirstWeekday(picker.year, picker.month);
+            const today = new Date();
+
+            // Empty padding cells
+            for (let i = 0; i < offset; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'cal-day empty';
+                grid.appendChild(empty);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                const isToday = d === today.getDate() &&
+                                picker.month === today.getMonth() &&
+                                picker.year === today.getFullYear();
+                const isSelected = d === picker.selDay &&
+                                   picker.month === picker.selMonth;
+
+                let cls = 'cal-day';
+                if (isSelected) cls += ' selected';
+                else if (isToday) cls += ' today';
+
+                cell.className = cls;
+                cell.textContent = d;
+                cell.addEventListener('click', () => selectPickerDay(d));
+                grid.appendChild(cell);
+            }
+        }
+
+        function selectPickerDay(day) {
+            picker.selDay = day;
+            picker.selMonth = picker.month;
+            document.getElementById('editDateError').classList.add('hidden');
+            renderPicker();
+        }
+
+        function pickerPrevMonth() {
+            picker.month--;
+            if (picker.month < 0) { picker.month = 11; picker.year--; }
+            renderPicker();
+        }
+
+        function pickerNextMonth() {
+            picker.month++;
+            if (picker.month > 11) { picker.month = 0; picker.year++; }
+            renderPicker();
+        }
+
+        // ─── Edit Shift Modal ─────────────────────────────────────────────────
+
+        function openEditModal(id) {
+            const shift = ledger.shifts.find(s => s.id === id);
+            picker.editingId = id;
+
+            // Parse existing DD/MM date
+            const parts = shift.date.split('/');
+            if (parts.length === 2) {
+                picker.selDay = parseInt(parts[0], 10);
+                picker.selMonth = parseInt(parts[1], 10) - 1;
+                picker.month = picker.selMonth;
+                picker.year = new Date().getFullYear();
+            } else {
+                picker.selDay = null;
+                picker.selMonth = null;
+                picker.month = new Date().getMonth();
+                picker.year = new Date().getFullYear();
+            }
+
+            document.getElementById('editRate').value = shift.rate;
+            document.getElementById('editDateError').classList.add('hidden');
+            renderPicker();
+
+            const modal = document.getElementById('editShiftModal');
+            modal.classList.remove('hidden');
+            // Re-trigger animation
+            const card = modal.querySelector('.modal-card');
+            card.style.animation = 'none';
+            card.offsetHeight; // reflow
+            card.style.animation = '';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editShiftModal').classList.add('hidden');
+        }
+
+        async function saveEditShift() {
+            if (picker.selDay === null || picker.selMonth === null) {
+                document.getElementById('editDateError').classList.remove('hidden');
+                return;
+            }
+
+            const id = picker.editingId;
+            const rate = parseFloat(document.getElementById('editRate').value);
+            const date = String(picker.selDay).padStart(2, '0') + '/' +
+                         String(picker.selMonth + 1).padStart(2, '0');
+
+            try {
+                const res = await fetch(`${API_URL}/shifts/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ rate, date })
+                });
+                const updated = await res.json();
+                const idx = ledger.shifts.findIndex(s => s.id === id);
+                ledger.shifts[idx] = updated;
+                closeEditModal();
+                render();
+            } catch (err) {
+                console.error('Error saving shift:', err);
+            }
+        }
+
+        // ─── Confirm Delete Modal ─────────────────────────────────────────────
+
+        let pendingDeleteId = null;
+
+        function openDeleteModal(id) {
+            pendingDeleteId = id;
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            const card = modal.querySelector('.modal-card');
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = '';
+        }
+
+        function closeConfirmModal() {
+            pendingDeleteId = null;
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        async function confirmDeleteShift() {
+            if (pendingDeleteId === null) return;
+            const id = pendingDeleteId;
+            closeConfirmModal();
+            try {
+                await fetch(`${API_URL}/shifts/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                ledger.shifts = ledger.shifts.filter(s => s.id !== id);
+                render();
+            } catch (err) {
+                console.error('Error deleting shift:', err);
+            }
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('editShiftModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+
+        // ─── Rendering ────────────────────────────────────────────────────────
+
         function render() {
             // Render Shifts
             const sList = document.getElementById('shiftList');
             sList.innerHTML = ledger.shifts.map(s => `
                 <div class="flex items-center justify-between p-3.5 bg-slate-900/30 border border-slate-900 rounded-xl hover:border-slate-800 transition-all group">
-                    <div class="flex items-center gap-3.5">
+                    <div class="flex items-center gap-3">
                         <input type="checkbox" class="checkbox-custom" ${s.paid ? 'checked' : ''} onchange="toggleShift(${s.id})">
                         <div>
                             <div class="text-xs font-mono font-medium text-slate-300 tracking-tight">${s.date}</div>
-                            <div class="inline-flex items-center mt-1 text-[9px] font-semibold tracking-wider uppercase ${s.paid ? 'text-emerald-400' : 'text-amber-500'}">
+                            <div class="inline-flex items-center mt-0.5 text-[9px] font-semibold tracking-wider uppercase ${s.paid ? 'text-emerald-400' : 'text-amber-500'}">
                                 ${s.paid ? '• Complete' : '• Pending'}
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 sm:gap-4">
                         <span class="text-sm font-mono font-medium text-slate-200">€${s.rate.toFixed(2)}</span>
-                        <div class="opacity-0 group-hover:opacity-100 flex gap-2.5 transition-opacity duration-150">
-                            <button onclick="editShift(${s.id})" class="text-xs text-slate-500 hover:text-slate-300">Modifica</button>
-                            <button onclick="deleteShift(${s.id})" class="text-xs text-rose-500/70 hover:text-rose-400">Rimuovi</button>
+                        <div class="shift-actions flex gap-2">
+                            <button onclick="openEditModal(${s.id})" class="text-xs text-slate-500 hover:text-slate-300 active:text-white transition-colors py-1 px-1.5 rounded hover:bg-slate-800">Edit</button>
+                            <button onclick="openDeleteModal(${s.id})" class="text-xs text-rose-500/70 hover:text-rose-400 active:text-rose-300 transition-colors py-1 px-1.5 rounded hover:bg-rose-950/20">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -546,13 +795,13 @@
             const eList = document.getElementById('expenseList');
             eList.innerHTML = ledger.expenses.map(e => `
                 <div class="flex justify-between items-center p-3 border-b border-slate-900/60 group hover:bg-slate-900/20 px-1 rounded-lg transition-all">
-                    <div>
-                        <div class="text-xs font-medium text-slate-300">${e.description}</div>
+                    <div class="min-w-0 flex-1 mr-3">
+                        <div class="text-xs font-medium text-slate-300 truncate">${e.description}</div>
                         <div class="text-[9px] text-slate-600 font-mono mt-0.5">${e.date}</div>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 flex-shrink-0">
                         <span class="text-slate-400 font-mono text-xs">-€${e.amount.toFixed(2)}</span>
-                        <button onclick="deleteExp(${e.id})" class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 font-medium transition-all text-xs">Delete</button>
+                        <button onclick="deleteExp(${e.id})" class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 font-medium transition-all text-xs">×</button>
                     </div>
                 </div>
             `).join('') || '<p class="text-slate-600 text-center py-4 text-xs italic">No transactions logging.</p>';
@@ -560,16 +809,12 @@
             // Totals
             const earnings = ledger.shifts.filter(s => s.paid).reduce((sum, s) => sum + s.rate, 0);
             const spend = ledger.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const final = ledger.baseBalance + earnings - spend;
-            
-            document.getElementById('statBalance').textContent = `€${final.toFixed(2)}`;
+            document.getElementById('statBalance').textContent = `€${(ledger.baseBalance + earnings - spend).toFixed(2)}`;
         }
 
         // --- Init ---
         window.addEventListener('load', () => {
-            if (token && currentUser) {
-                enterDashboard();
-            }
+            if (token && currentUser) enterDashboard();
         });
     </script>
 </body>
